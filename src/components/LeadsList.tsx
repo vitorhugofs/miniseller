@@ -4,7 +4,6 @@ import LeadCard from './LeadCard';
 import type { Lead, Opportunity } from '../interfaces';
 import DialogWrapper from './dialogWrapper';
 import { useEffect, useState } from 'react';
-import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 
 export default function LeadsList() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -50,6 +49,7 @@ export default function LeadsList() {
               setLoading(false);
             });
         }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         setError(err.message);
         setLoading(false);
