@@ -44,18 +44,18 @@ export default function EditLead({ lead, onSave, onClose }: EditLeadProps) {
   };
 
   return (
-    <form className="mt-6 flex-1 px-6" onSubmit={e => { e.preventDefault(); handleSave(); }}>
+    <form className="flex-1" onSubmit={e => { e.preventDefault(); handleSave(); }}>
       <label className="block mb-2 text-sm text-gray-300">Email</label>
       <input
         type="email"
-        className="mb-4 p-2 border rounded w-full text-black"
+        className="mb-4 p-2 bg-black text-white rounded w-full border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
         value={email}
         onChange={e => setEmail(e.target.value)}
         placeholder="example@domain.com"
       />
       <label className="block mb-2 text-sm text-gray-300">Status</label>
       <select
-        className="mb-4 p-2 border rounded w-full text-black"
+        className="mb-4 p-2 bg-black text-white rounded w-full border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white"
         value={status}
         onChange={e => setStatus(e.target.value as Lead["status"])}
       >
@@ -67,13 +67,13 @@ export default function EditLead({ lead, onSave, onClose }: EditLeadProps) {
       <div className="flex gap-2 mt-4">
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-white text-black px-4 py-2 rounded hover:bg-black hover:text-white"
         >
           Save
         </button>
         <button
           type="button"
-          className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+          className="bg-black text-white px-4 py-2 rounded hover:bg-white hover:text-black"
           onClick={onClose}
         >
           Cancel

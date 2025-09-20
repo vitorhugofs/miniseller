@@ -12,30 +12,41 @@ export default function LeadCard({
   const isConverted = !!lead.Opportunity;
   return (
     <div
-      className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+      className={`flex items-center bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer min-h-[96px] relative`}
       onClick={onClick}
     >
-      <h2 className="text-xl font-bold mb-2 text-black">{lead.name}</h2>
-      <p className="text-gray-600 mb-1">Company: {lead.company}</p>
-      <p className="text-gray-600 mb-1">Email: {lead.email}</p>
-      <p className="text-gray-600 mb-1">Source: {lead.source}</p>
-      <p className="text-gray-600 mb-1">Score: {lead.score}</p>
-      <p className="text-gray-600">Status: {lead.status}</p>
-      {isConverted ? (
-        <span className="mt-2 inline-block bg-gray-400 text-white px-3 py-3 rounded-lg cursor-not-allowed">
-          Converted
-        </span>
-      ) : (
-        <button
-          className="mt-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-          onClick={(e) => {
-            e.stopPropagation();
-            onConvert();
-          }}
-        >
-          Convert
-        </button>
+      {isConverted && (
+        <div className="absolute left-0 top-0 h-full w-2 bg-green-500 rounded-l-lg" />
       )}
+      <div className="flex-1 flex  flex-col pl-6 pr-4 py-4">
+        <h2 className="text-2xl font-bold text-left text-black mb-1">{lead.name}</h2>
+        <div className="flex flex-col text-left sm:flex-row sm:gap-4 text-sm text-gray-600">
+          <span>{lead.email}</span>
+          <span className='sm:block hidden'>|</span>
+          <span>{lead.company}</span>
+          <span className='sm:block hidden'>|</span>
+          <span>{lead.source}</span>
+        </div>
+      </div>
+      <div className="flex items-center gap-6 pr-6">
+        {!isConverted && (
+          <button
+            className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              onConvert();
+            }}
+          >
+            Convert
+          </button>
+        )}
+        <div className="flex flex-col items-end">
+          { lead.score > 90 && <span className="text-3xl font-extrabold text-green-700">{lead.score}</span>}
+          { lead.score <= 90 && lead.score >= 70 && <span className="text-3xl font-extrabold text-yellow-500">{lead.score}</span>}
+          { lead.score < 70 && <span className="text-3xl font-extrabold text-red-500">{lead.score}</span>}
+          <span className="text-xs text-gray-400">Score</span>
+        </div>
+      </div>
     </div>
   );
 }

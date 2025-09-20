@@ -37,14 +37,14 @@ export default function DialogWrapper({ open, onClose, title = "Panel title", ch
                   </button>
                 </div>
               </TransitionChild>
-              <div className="relative flex h-full flex-col overflow-y-auto bg-gray-800 py-6 shadow-xl after:absolute after:inset-y-0 after:left-0 after:w-px after:bg-white/10">
+              <div className="relative flex h-full flex-col overflow-y-auto bg-gray-900 py-6 shadow-xl after:absolute after:inset-y-0 after:left-0 after:w-px after:bg-white/10">
                 <div className="px-4 sm:px-6">
-                  <DialogTitle className="text-base font-semibold text-white">{title}</DialogTitle>
+                    <DialogTitle className="text-base font-semibold text-white">{title}</DialogTitle>
                 </div>
                 <div className="relative mt-6 flex-1 px-4 sm:px-6">
-                  {children}
+                    {children}
                 </div>
-              </div>
+            </div>
             </DialogPanel>
           </div>
         </div>

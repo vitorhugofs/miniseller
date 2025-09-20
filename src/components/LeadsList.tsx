@@ -4,6 +4,7 @@ import LeadCard from './LeadCard';
 import type { Lead, Opportunity } from '../interfaces';
 import DialogWrapper from './dialogWrapper';
 import { useEffect, useState } from 'react';
+import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
 
 export default function LeadsList() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -25,31 +26,46 @@ export default function LeadsList() {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    try {
-      const storedLeads = localStorage.getItem('leadsData');
-      if (storedLeads) {
-        setLeads(JSON.parse(storedLeads));
+
+    setTimeout(() => {
+      try {
+        const storedLeads = localStorage.getItem('leadsData');
+        if (storedLeads) {
+          setLeads(JSON.parse(storedLeads));
+          setLoading(false);
+        } else {
+          fetch('/data/leads.json')
+            .then((response) => {
+              if (!response.ok) throw new Error('Failed to fetch leads');
+              return response.json();
+            })
+            .then((data) => {
+              setTimeout(() => {
+                setLeads(data);
+                setLoading(false);
+              }, 1000);
+            })
+            .catch((err) => {
+              setError(err.message);
+              setLoading(false);
+            });
+        }
+      } catch (err: any) {
+        setError(err.message);
         setLoading(false);
-      } else {
-        fetch('/data/leads.json')
-          .then((response) => {
-            if (!response.ok) throw new Error('Failed to fetch leads');
-            return response.json();
-          })
-          .then((data) => {
-            setLeads(data);
-            setLoading(false);
-          })
-          .catch((err) => {
-            setError(err.message);
-            setLoading(false);
-          });
       }
-    } catch (err: any) {
-      setError(err.message);
-      setLoading(false);
-    }
+    }, 1000);
   }, []);
+
+  useEffect(() => {
+    if (search !== '' || status !== '') {
+      setLoading(true);
+      const timeout = setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+      return () => clearTimeout(timeout);
+    }
+  }, [search, status]);
 
   useEffect(() => {
     if (leads.length > 0) {
@@ -121,23 +137,23 @@ export default function LeadsList() {
         <input
           type="text"
           placeholder="Search by name or email"
-          className="p-2 border rounded w-full"
+          className="p-2 bg-black text-white rounded w-full"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <select
-          className="p-2 border rounded"
+          className="bg-black text-white rounded p-2 focus:outline-none focus:ring-2 focus:ring-white"
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
-          <option value="">All Statuses</option>
+          <option value="">All</option>
           {statuses.map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
           ))}
         </select>
-        <button
+        <a
           className="p-1 bg-transparent rounded flex items-center"
           onClick={handleSortToggle}
           title={`Sort by score (${sortOrder === 'asc' ? 'Ascending' : 'Descending'})`}
@@ -151,20 +167,25 @@ export default function LeadsList() {
               <path d="M12 16l6-6H6l6 6z" fill="#fff"/>
             </svg>
           )}
-        </button>
+        </a>
       </div>
       {loading && (
-        <div className="flex justify-center items-center py-8">
-          <span className="text-gray-500">Loading leads...</span>
+        <div className="flex flex-col justify-center items-center min-h-[60vh]">
+          <span className="text-gray-400 text-xl">Loading leads...</span>
         </div>
       )}
       {error && (
-        <div className="flex justify-center items-center py-8">
-          <span className="text-red-500">Error: {error}</span>
+        <div className="flex flex-col justify-center items-center min-h-[60vh]">
+          <span className="text-red-400 text-xl">Error: {error}</span>
         </div>
       )}
-      {!loading && !error && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {!loading && !error && filteredLeads.length === 0 && (
+        <div className="flex flex-col justify-center items-center min-h-[60vh]">
+          <span className="text-gray-400 text-xl">No leads found.</span>
+        </div>
+      )}
+      {!loading && !error && filteredLeads.length > 0 && (
+        <div className="flex flex-col gap-4 overflow-visible">
           {filteredLeads.map((lead) => (
             <LeadCard
               key={lead.id}
