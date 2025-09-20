@@ -1,69 +1,42 @@
-# React + TypeScript + Vite
+# Miniseller Leads List
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive React app for managing leads, built with TypeScript and Tailwind CSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Lead List:** Search, filter by status, and sort leads by score.
+- **Lead Card:** Horizontal card layout with name, email, source, website, score, and convert status.
+- **Convert Lead:** Convert a lead to an opportunity with a form and see all converted leads in a table.
+- **Edit Lead:** Edit lead status and email with validation.
+- **Dialogs:** Consistent modal dialogs for editing and converting, matching the app background.
+- **Loading/Error/Empty States:** Full-page, centered feedback for loading, errors, and empty results.
+- **Responsive Design:** Main content is centered and limited to a max width of 760px.
+- **Persistent Data:** All changes are saved to localStorage.
 
-## Expanding the ESLint configuration
+## Usage
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Install dependencies:**
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+   ```bash
+   npm install
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. **Run the app:**
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+   ```bash
+   npm start
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. **Development:**
+   - Edit leads and convert them to opportunities.
+   - All changes are saved locally.
+   - The UI is fully responsive.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Customization
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- **Styling:** Uses Tailwind CSS for easy customization.
+- **Data:** Loads initial data from `/data/leads.json` if not present in localStorage.
+
+## License
+
+MIT
