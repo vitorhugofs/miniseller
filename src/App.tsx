@@ -1,5 +1,5 @@
 import './App.css'
-import LeadsList from './components/leads-list/LeadsList'
+import LeadsList from './components/LeadsList'
 
 function App() {
 
