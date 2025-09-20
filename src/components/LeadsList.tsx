@@ -185,7 +185,7 @@ export default function LeadsList() {
         </div>
       )}
       {!loading && !error && filteredLeads.length > 0 && (
-        <div className="flex flex-col gap-4 overflow-visible">
+        <div className="flex flex-col gap-4">
           {filteredLeads.map((lead) => (
             <LeadCard
               key={lead.id}
