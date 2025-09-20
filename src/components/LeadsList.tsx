@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
 import EditLead from './editLead';
-import type { Lead } from '../interfaces';
+import type { Lead, Opportunity } from '../interfaces';
 import DialogWrapper from './dialogWrapper';
-
-interface Opportunity {
-  id: string;
-  name: string;
-  stage: string;
-  amount: string;
-  accountName: string;
-}
 
 function ConvertLead({
   lead,
@@ -47,19 +39,19 @@ function ConvertLead({
         <table className="min-w-full bg-white rounded shadow">
           <thead>
             <tr>
-              <th className="px-2 py-1 text-left">Name</th>
-              <th className="px-2 py-1 text-left">Stage</th>
-              <th className="px-2 py-1 text-left">Amount</th>
-              <th className="px-2 py-1 text-left">Account Name</th>
+              <th className="px-2 py-1 text-gray-700 text-left">Name</th>
+              <th className="px-2 py-1 text-gray-700 text-left">Stage</th>
+              <th className="px-2 py-1 text-gray-700 text-left">Amount</th>
+              <th className="px-2 py-1 text-gray-700 text-left">Account Name</th>
             </tr>
           </thead>
           <tbody>
             {leadsWithOpportunities.map((l) => (
               <tr key={l.id}>
-                <td className="px-2 py-1">{l.name}</td>
-                <td className="px-2 py-1">{l.Opportunity?.stage}</td>
-                <td className="px-2 py-1">{l.Opportunity?.amount}</td>
-                <td className="px-2 py-1">{l.Opportunity?.accountName}</td>
+                <td className="px-2 py-1 text-gray-600">{l.name}</td>
+                <td className="px-2 py-1 text-gray-600">{l.Opportunity?.stage}</td>
+                <td className="px-2 py-1 text-gray-600">{l.Opportunity?.amount}</td>
+                <td className="px-2 py-1 text-gray-600">{l.Opportunity?.accountName}</td>
               </tr>
             ))}
           </tbody>
@@ -141,16 +133,38 @@ export default function LeadsList() {
   const [convertOpen, setConvertOpen] = React.useState(false);
   const [convertLead, setConvertLead] = React.useState<Lead | null>(null);
 
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
   React.useEffect(() => {
-    const storedLeads = localStorage.getItem('leadsData');
-    if (storedLeads) {
-      setLeads(JSON.parse(storedLeads));
-    } else {
-      fetch('/data/leads.json')
-        .then((response) => response.json())
-        .then((data) => setLeads(data));
+    setLoading(true);
+    setError(null);
+    try {
+      const storedLeads = localStorage.getItem('leadsData');
+      if (storedLeads) {
+        setLeads(JSON.parse(storedLeads));
+        setLoading(false);
+      } else {
+        fetch('/data/leads.json')
+          .then((response) => {
+            if (!response.ok) throw new Error('Failed to fetch leads');
+            return response.json();
+          })
+          .then((data) => {
+            setLeads(data);
+            setLoading(false);
+          })
+          .catch((err) => {
+            setError(err.message);
+            setLoading(false);
+          });
+      }
+    } catch (err: any) {
+      setError(err.message);
+      setLoading(false);
     }
   }, []);
+
 
   React.useEffect(() => {
     if (leads.length > 0) {
@@ -254,16 +268,28 @@ export default function LeadsList() {
           )}
         </button>
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredLeads.map((lead) => (
-          <LeadCard
-            key={lead.id}
-            lead={lead}
-            onClick={() => handleLeadClick(lead)}
-            onConvert={() => handleConvertClick(lead)}
-          />
-        ))}
-      </div>
+      {loading && (
+        <div className="flex justify-center items-center py-8">
+          <span className="text-gray-500">Loading leads...</span>
+        </div>
+      )}
+      {error && (
+        <div className="flex justify-center items-center py-8">
+          <span className="text-red-500">Error: {error}</span>
+        </div>
+      )}
+      {!loading && !error && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredLeads.map((lead) => (
+            <LeadCard
+              key={lead.id}
+              lead={lead}
+              onClick={() => handleLeadClick(lead)}
+              onConvert={() => handleConvertClick(lead)}
+            />
+          ))}
+        </div>
+      )}
       <DialogWrapper
         open={dialogOpen}
         onClose={handleCloseDialog}
@@ -304,6 +330,7 @@ function LeadCard({
   onClick: () => void;
   onConvert: () => void;
 }) {
+  const isConverted = !!lead.Opportunity;
   return (
     <div
       className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
@@ -315,15 +342,21 @@ function LeadCard({
       <p className="text-gray-600 mb-1">Source: {lead.source}</p>
       <p className="text-gray-600 mb-1">Score: {lead.score}</p>
       <p className="text-gray-600">Status: {lead.status}</p>
-      <button
-        className="mt-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-        onClick={(e) => {
-          e.stopPropagation();
-          onConvert();
-        }}
-      >
-        Convert
-      </button>
+      {isConverted ? (
+        <span className="mt-2 inline-block bg-gray-400 text-white px-3 py-3 rounded-lg cursor-not-allowed">
+          Converted
+        </span>
+      ) : (
+        <button
+          className="mt-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+          onClick={(e) => {
+            e.stopPropagation();
+            onConvert();
+          }}
+        >
+          Convert
+        </button>
+      )}
     </div>
   );
 }
