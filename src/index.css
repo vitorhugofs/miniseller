@@ -5,6 +5,10 @@
   line-height: 1.5;
   font-weight: 400;
 
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  max-width: unset;
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
@@ -17,9 +21,10 @@
 
 body {
   margin: 0;
-  display: flex;
+  display: block;
   place-items: center;
   min-height: 100vh;
+  max-width: unset;
   background-color: var(--color-gray-800);
 }
 

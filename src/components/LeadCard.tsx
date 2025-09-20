@@ -28,7 +28,7 @@ export default function LeadCard({
           <span>{lead.source}</span>
         </div>
       </div>
-      <div className="flex flex-col-reverse lg:flex-row justify-center lg:justify-right items-right lg:items-center gap-2 lg:gap-6 pr-6">
+      <div className="flex flex-col-reverse lg:flex-row justify-center lg:justify-right items-right lg:items-center gap-2 lg:gap-6 md:pr-4 pr-2">
         {!isConverted && (
           <button
             className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700"

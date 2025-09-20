@@ -131,7 +131,7 @@ export default function LeadsList() {
 
   return (
     <div>
-      <div className="flex gap-4 mb-4 items-center">
+      <div className="flex gap-4 mb-8 items-center">
         <input
           type="text"
           placeholder="Search by name or email"
