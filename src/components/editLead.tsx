@@ -29,7 +29,6 @@ export default function EditLead({ lead, onSave, onClose }: EditLeadProps) {
       return;
     }
     const updatedLead = { ...lead, email, status };
-    // Update localStorage
     const leadsData = localStorage.getItem('leadsData');
     if (leadsData) {
       const leads: Lead[] = JSON.parse(leadsData);

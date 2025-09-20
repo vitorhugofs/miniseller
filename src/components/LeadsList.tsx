@@ -15,7 +15,6 @@ export default function LeadsList() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
-  // Convert dialog state
   const [convertOpen, setConvertOpen] = useState(false);
   const [convertLead, setConvertLead] = useState<Lead | null>(null);
 
@@ -108,7 +107,6 @@ export default function LeadsList() {
     setSelectedLead(null);
   };
 
-  // Convert logic
   const handleConvertClick = (lead: Lead) => {
     setConvertLead(lead);
     setConvertOpen(true);
