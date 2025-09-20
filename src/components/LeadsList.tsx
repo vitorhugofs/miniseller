@@ -142,7 +142,7 @@ export default function LeadsList() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <select
-          className="bg-black text-white rounded p-2 focus:outline-none focus:ring-2 focus:ring-white"
+          className="bg-black text-white rounded p-2 appearance focus:outline-none focus:ring-2 focus:ring-white"
           value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
