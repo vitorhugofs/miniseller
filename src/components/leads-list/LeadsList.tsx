@@ -1,21 +1,39 @@
 import React from 'react';
+import EditLead from './editLead';
+import type { Lead } from '../../interfaces';
 
 const SORT_KEY = 'leadSortOrder';
 const STATUS_KEY = 'leadStatus';
+const LEADS_KEY = 'leadsData';
 
 export default function LeadsList() {
-  const [data, setData] = React.useState<Lead[]>([]);
+  const [leads, setLeads] = React.useState<Lead[]>([]);
   const [search, setSearch] = React.useState('');
-  const [status, setStatus] = React.useState(() => localStorage.getItem('leadStatus') || '');
+  const [status, setStatus] = React.useState(() => localStorage.getItem(STATUS_KEY) || '');
   const [sortOrder, setSortOrder] = React.useState<'asc' | 'desc'>(
     () => (localStorage.getItem(SORT_KEY) as 'asc' | 'desc') || 'desc'
   );
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null);
 
+  // Load leads from localStorage or fetch if not present
   React.useEffect(() => {
-    fetch('/data/leads.json')
-      .then((response) => response.json())
-      .then((data) => setData(data));
+    const storedLeads = localStorage.getItem(LEADS_KEY);
+    if (storedLeads) {
+      setLeads(JSON.parse(storedLeads));
+    } else {
+      fetch('/data/leads.json')
+        .then((response) => response.json())
+        .then((data) => setLeads(data));
+    }
   }, []);
+
+  // Persist leads to localStorage when leads change
+  React.useEffect(() => {
+    if (leads.length > 0) {
+      localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
+    }
+  }, [leads]);
 
   React.useEffect(() => {
     localStorage.setItem(STATUS_KEY, status);
@@ -25,9 +43,9 @@ export default function LeadsList() {
     localStorage.setItem(SORT_KEY, sortOrder);
   }, [sortOrder]);
 
-  const statuses = Array.from(new Set(data.map((lead) => lead.status)));
+  const statuses = Array.from(new Set(leads.map((lead) => lead.status)));
 
-  const filteredLeads = data
+  const filteredLeads = leads
     .filter(
       (lead) =>
         (lead.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -40,6 +58,16 @@ export default function LeadsList() {
 
   const handleSortToggle = () => {
     setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+  };
+
+  const handleLeadClick = (lead: Lead) => {
+    setSelectedLead(lead);
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    setSelectedLead(null);
   };
 
   return (
@@ -82,26 +110,30 @@ export default function LeadsList() {
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filteredLeads.map((lead) => (
-          <LeadCard key={lead.id} lead={lead} />
+          <LeadCard key={lead.id} lead={lead} onClick={() => handleLeadClick(lead)} />
         ))}
       </div>
+      <EditLead
+        open={dialogOpen}
+        onClose={handleCloseDialog}
+        title={selectedLead ? selectedLead.name : "Panel title"}
+        lead={selectedLead}
+        onSave={(updatedLead) => {
+            setLeads(leads =>
+            leads.map(l => l.id === updatedLead.id ? updatedLead : l)
+            );
+        }}
+        />
     </div>
   );
 }
 
-interface Lead {
-  id: string;
-  name: string;
-  company: string;
-  email: string;
-  source: string;
-  score: number;
-  status: string;
-}
-
-function LeadCard({ lead }: { lead: Lead }) {
+function LeadCard({ lead, onClick }: { lead: Lead; onClick: () => void }) {
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div
+      className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+      onClick={onClick}
+    >
       <h2 className="text-xl font-bold mb-2 text-black">{lead.name}</h2>
       <p className="text-gray-600 mb-1">Company: {lead.company}</p>
       <p className="text-gray-600 mb-1">Email: {lead.email}</p>
