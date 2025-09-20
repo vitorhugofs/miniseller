@@ -1,142 +1,28 @@
-import React, { useState } from 'react';
 import EditLead from './editLead';
+import ConvertLead from './ConvertLead';
+import LeadCard from './LeadCard';
 import type { Lead, Opportunity } from '../interfaces';
 import DialogWrapper from './dialogWrapper';
-
-function ConvertLead({
-  lead,
-  onSave,
-  onClose,
-  leadsWithOpportunities,
-}: {
-  lead: Lead;
-  onSave: (opportunity: Opportunity) => void;
-  onClose: () => void;
-  leadsWithOpportunities: Lead[];
-}) {
-  const [amount, setAmount] = useState('');
-  const [accountName, setAccountName] = useState('');
-  const [stage, setStage] = useState('Started');
-  const [saved, setSaved] = useState(false);
-
-  const handleSave = () => {
-    if (!amount || !accountName) return;
-    const opportunity: Opportunity = {
-      id: lead.id,
-      name: lead.name,
-      stage,
-      amount,
-      accountName,
-    };
-    onSave(opportunity);
-    setSaved(true);
-  };
-
-  if (saved) {
-    return (
-      <div className="p-4">
-        <h3 className="text-lg font-bold mb-4 text-white">Leads with Opportunities</h3>
-        <table className="min-w-full bg-white rounded shadow">
-          <thead>
-            <tr>
-              <th className="px-2 py-1 text-gray-700 text-left">Name</th>
-              <th className="px-2 py-1 text-gray-700 text-left">Stage</th>
-              <th className="px-2 py-1 text-gray-700 text-left">Amount</th>
-              <th className="px-2 py-1 text-gray-700 text-left">Account Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leadsWithOpportunities.map((l) => (
-              <tr key={l.id}>
-                <td className="px-2 py-1 text-gray-600">{l.name}</td>
-                <td className="px-2 py-1 text-gray-600">{l.Opportunity?.stage}</td>
-                <td className="px-2 py-1 text-gray-600">{l.Opportunity?.amount}</td>
-                <td className="px-2 py-1 text-gray-600">{l.Opportunity?.accountName}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <button
-          className="mt-4 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-          onClick={onClose}
-        >
-          Close
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <form
-      className="p-4"
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSave();
-      }}
-    >
-      <h3 className="text-lg font-bold mb-4 text-white">{lead.name}</h3>
-      <label className="block mb-2 text-sm text-gray-300">Amount</label>
-      <input
-        type="text"
-        className="mb-4 p-2 border rounded w-full text-black"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        required
-      />
-      <label className="block mb-2 text-sm text-gray-300">Account Name</label>
-      <input
-        type="text"
-        className="mb-4 p-2 border rounded w-full text-black"
-        value={accountName}
-        onChange={(e) => setAccountName(e.target.value)}
-        required
-      />
-      <label className="block mb-2 text-sm text-gray-300">Stage</label>
-      <select
-        className="mb-4 p-2 border rounded w-full text-black"
-        value={stage}
-        onChange={(e) => setStage(e.target.value)}
-      >
-        <option value="Started">Started</option>
-        <option value="Finished">Finished</option>
-      </select>
-      <div className="flex gap-2 mt-4">
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Save
-        </button>
-        <button
-          type="button"
-          className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-          onClick={onClose}
-        >
-          Close
-        </button>
-      </div>
-    </form>
-  );
-}
+import { useEffect, useState } from 'react';
 
 export default function LeadsList() {
-  const [leads, setLeads] = React.useState<Lead[]>([]);
-  const [search, setSearch] = React.useState('');
-  const [status, setStatus] = React.useState(() => localStorage.getItem('leadStatus') || '');
-  const [sortOrder, setSortOrder] = React.useState<'asc' | 'desc'>(
+  const [leads, setLeads] = useState<Lead[]>([]);
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState(() => localStorage.getItem('leadStatus') || '');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(
     () => (localStorage.getItem('leadSortOrder') as 'asc' | 'desc') || 'desc'
   );
-  const [dialogOpen, setDialogOpen] = React.useState(false);
-  const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   // Convert dialog state
-  const [convertOpen, setConvertOpen] = React.useState(false);
-  const [convertLead, setConvertLead] = React.useState<Lead | null>(null);
+  const [convertOpen, setConvertOpen] = useState(false);
+  const [convertLead, setConvertLead] = useState<Lead | null>(null);
 
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setLoading(true);
     setError(null);
     try {
@@ -165,18 +51,17 @@ export default function LeadsList() {
     }
   }, []);
 
-
-  React.useEffect(() => {
+  useEffect(() => {
     if (leads.length > 0) {
       localStorage.setItem('leadsData', JSON.stringify(leads));
     }
   }, [leads]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     localStorage.setItem('leadStatus', status);
   }, [status]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     localStorage.setItem('leadSortOrder', sortOrder);
   }, [sortOrder]);
 
@@ -317,46 +202,6 @@ export default function LeadsList() {
           />
         )}
       </DialogWrapper>
-    </div>
-  );
-}
-
-function LeadCard({
-  lead,
-  onClick,
-  onConvert,
-}: {
-  lead: Lead;
-  onClick: () => void;
-  onConvert: () => void;
-}) {
-  const isConverted = !!lead.Opportunity;
-  return (
-    <div
-      className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-      onClick={onClick}
-    >
-      <h2 className="text-xl font-bold mb-2 text-black">{lead.name}</h2>
-      <p className="text-gray-600 mb-1">Company: {lead.company}</p>
-      <p className="text-gray-600 mb-1">Email: {lead.email}</p>
-      <p className="text-gray-600 mb-1">Source: {lead.source}</p>
-      <p className="text-gray-600 mb-1">Score: {lead.score}</p>
-      <p className="text-gray-600">Status: {lead.status}</p>
-      {isConverted ? (
-        <span className="mt-2 inline-block bg-gray-400 text-white px-3 py-3 rounded-lg cursor-not-allowed">
-          Converted
-        </span>
-      ) : (
-        <button
-          className="mt-2 bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-          onClick={(e) => {
-            e.stopPropagation();
-            onConvert();
-          }}
-        >
-          Convert
-        </button>
-      )}
     </div>
   );
 }
