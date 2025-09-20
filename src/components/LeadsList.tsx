@@ -130,8 +130,8 @@ export default function LeadsList() {
   const leadsWithOpportunities = leads.filter((l) => l.Opportunity);
 
   return (
-    <div>
-      <div className="flex gap-4 mb-8 mx-4 items-center">
+    <div className="mx-4">
+      <div className="flex gap-4 mb-8 items-center">
         <input
           type="text"
           placeholder="Search by name or email"
